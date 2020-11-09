@@ -3,7 +3,7 @@
 <div style="display: none;" id="library">{{ $library }}</div>
 <div style="display: none;" id="collection">{{ $collection }}</div>
 <div style="display: none;" id="volume">{{ $volume }}</div>
-<div style="display: none;" id="page">1</div>
+<div style="display: none;" id="page">{{ $page }}</div>
 <div style="display: none;" id="user">{{ $user }}</div>
 <div class="container">
     <div class="row">

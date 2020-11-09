@@ -12,7 +12,7 @@ class VolumeController extends Controller
      * Return volumes list view
      * @param string $library
      * @param string $collection
-     * 
+     *
      * @return view
      */
     public function index($library, $collection)
@@ -28,12 +28,20 @@ class VolumeController extends Controller
      * @param string $library
      * @param string $collection
      * @param string $volume
-     * 
+     *
      * @return view
      */
     public function readVolume($library, $collection, $volume)
     {
-        return view('volume', ['collection' => $collection, "library" => $library, "volume" => $volume, "user" => Auth()->user()->name]);
+        $vol = Volume::where('slug', $volume)->first();
+        if(Auth()->user()->last_volume == $vol->id){
+            $page = Auth()->user()->last_page;
+        }else{
+            Auth()->user()->last_volume = Volume::where('slug', $volume)->first()->id;
+            Auth()->user()->save();
+            $page = 1;
+        }
+        return view('volume', ['collection' => $collection, "library" => $library, "volume" => $volume, "user" => Auth()->user()->name, "page" => $page]);
     }
 
     /**
@@ -41,7 +49,7 @@ class VolumeController extends Controller
      *  @param string $library
      *  @param string $collection
      *  @param string $volume
-     * 
+     *
      *  @return null
      */
     public function uncompressVolume($library, $collection, $volume)
@@ -58,7 +66,7 @@ class VolumeController extends Controller
     /**
      * Unzip volume into user folder
      * @param string $path
-     * 
+     *
      * @return null
      */
     private function unzipFile($path)
@@ -71,7 +79,7 @@ class VolumeController extends Controller
 
     /**
      * Move every files into current user directory
-     * 
+     *
      * @return null
      */
     private function exportFilesAndClear()
@@ -103,7 +111,7 @@ class VolumeController extends Controller
      * @param string $collection
      * @param string $volume
      * @param int $page
-     * 
+     *
      * @return string
      */
     public function readPage($library, $collection, $volume, $page)
@@ -115,13 +123,15 @@ class VolumeController extends Controller
                 $array[] = $file;
             }
         }
+        Auth()->user()->last_page = $page;
+        Auth()->user()->save();
         return $array[$page - 1];
     }
 
     /**
      * Reformat name before sorting
      * @param string $file
-     * 
+     *
      * @return string
      */
     private function reformatName($file)
@@ -144,7 +154,7 @@ class VolumeController extends Controller
 
     /**
      * Clear current user directory
-     * 
+     *
      * @return null;
      */
     private function clearFolder()
