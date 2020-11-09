@@ -37,11 +37,11 @@ class VolumeController extends Controller
         if(Auth()->user()->last_volume == $vol->id){
             $page = Auth()->user()->last_page;
         }else{
-            Auth()->user()->last_volume = Volume::where('slug', $volume)->first()->id;
+            Auth()->user()->last_volume = $vol->id;
             Auth()->user()->save();
             $page = 1;
         }
-        return view('volume', ['collection' => $collection, "library" => $library, "volume" => $volume, "user" => Auth()->user()->name, "page" => $page]);
+        return view('volume', ['collection' => $collection, "library" => $library, "volume" => $volume, "user" => Auth()->user()->name, "page" => $page, "max_pages" => $vol->pages]);
     }
 
     /**
@@ -122,6 +122,11 @@ class VolumeController extends Controller
             if ($file[0] != '.' && $file[0] != '@') {
                 $array[] = $file;
             }
+        }
+        if($page -1 <= 0){
+            $page = 1;
+        }else if($page > count($array)){
+            $page = count($array);
         }
         Auth()->user()->last_page = $page;
         Auth()->user()->save();
