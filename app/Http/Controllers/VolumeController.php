@@ -27,6 +27,7 @@ class VolumeController extends Controller
         $collection = $volume->collection;
         $library = $collection->library;
         $path = $library->path . '/' . $collection->name . '/' . $volume->name . '.' . $volume->extension;
+        $this->clearFolder();
         $this->unzipFile($path);
     }
 
@@ -41,7 +42,8 @@ class VolumeController extends Controller
     {
         foreach (File::allFiles(Auth()->user()->getPublicPath()) as $file) {
             if (strpos($file, ".jpg") !== false || strpos($file, ".png") !== false) {
-                File::move($file, Auth()->user()->getPublicPath() . '/' . $file->getFilename());
+                $name = $this->reformatName($file);
+                File::move($file, Auth()->user()->getPublicPath() . '/' . $name);
             }
         }
         $files = scandir(Auth()->user()->getPublicPath());
@@ -68,5 +70,30 @@ class VolumeController extends Controller
             }
         }
         return $array[$page - 1];
+    }
+
+    private function reformatName($file)
+    {
+        $name = pathinfo(public_path($file))['filename'];
+        $extension = pathinfo(public_path($file))['extension'];
+        if (is_numeric($name)) {
+            if (strlen($name) == 1) {
+                $name = "00" . $name . '.' . $extension;
+            } elseif (strlen($name) == 2) {
+                $name = "0" . $name . '.' . $extension;
+            } else {
+                $name = $name . '.' . $extension;
+            }
+        } else {
+            $name = $name . '.' . $extension;
+        }
+        return $name;
+    }
+
+    private function clearFolder()
+    {
+        foreach (File::allFiles(Auth()->user()->getPublicPath()) as $file) {
+            File::delete($file);
+        }
     }
 }
