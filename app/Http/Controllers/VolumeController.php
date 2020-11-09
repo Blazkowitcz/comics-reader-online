@@ -8,6 +8,13 @@ use ZanySoft\Zip\Zip;
 
 class VolumeController extends Controller
 {
+    /**
+     * Return volumes list view
+     * @param string $library
+     * @param string $collection
+     * 
+     * @return view
+     */
     public function index($library, $collection)
     {
         $volumes = Volume::leftJoin('collections', function ($join) {
@@ -16,11 +23,27 @@ class VolumeController extends Controller
         return view('volumes', ['volumes' => $volumes, "library" => $library, "collection" => $collection]);
     }
 
+    /**
+     * Return volume view
+     * @param string $library
+     * @param string $collection
+     * @param string $volume
+     * 
+     * @return view
+     */
     public function readVolume($library, $collection, $volume)
     {
         return view('volume', ['collection' => $collection, "library" => $library, "volume" => $volume, "user" => Auth()->user()->name]);
     }
 
+    /**
+     *  Uncompress volume
+     *  @param string $library
+     *  @param string $collection
+     *  @param string $volume
+     * 
+     *  @return null
+     */
     public function uncompressVolume($library, $collection, $volume)
     {
         $volume = Volume::where('slug', $volume)->first();
@@ -29,15 +52,28 @@ class VolumeController extends Controller
         $path = $library->path . '/' . $collection->name . '/' . $volume->name . '.' . $volume->extension;
         $this->clearFolder();
         $this->unzipFile($path);
+        return null;
     }
 
+    /**
+     * Unzip volume into user folder
+     * @param string $path
+     * 
+     * @return null
+     */
     private function unzipFile($path)
     {
         $zip = Zip::open($path);
         $zip->extract(Auth()->user()->getPublicPath());
         $this->exportFilesAndClear();
+        return null;
     }
 
+    /**
+     * Move every files into current user directory
+     * 
+     * @return null
+     */
     private function exportFilesAndClear()
     {
         foreach (File::allFiles(Auth()->user()->getPublicPath()) as $file) {
@@ -58,8 +94,18 @@ class VolumeController extends Controller
                 }
             }
         }
+        return null;
     }
 
+    /**
+     * Return name of the page selected
+     * @param string $library
+     * @param string $collection
+     * @param string $volume
+     * @param int $page
+     * 
+     * @return string
+     */
     public function readPage($library, $collection, $volume, $page)
     {
         $files = scandir(Auth()->user()->getPublicPath());
@@ -72,6 +118,12 @@ class VolumeController extends Controller
         return $array[$page - 1];
     }
 
+    /**
+     * Reformat name before sorting
+     * @param string $file
+     * 
+     * @return string
+     */
     private function reformatName($file)
     {
         $name = pathinfo(public_path($file))['filename'];
@@ -90,10 +142,16 @@ class VolumeController extends Controller
         return $name;
     }
 
+    /**
+     * Clear current user directory
+     * 
+     * @return null;
+     */
     private function clearFolder()
     {
         foreach (File::allFiles(Auth()->user()->getPublicPath()) as $file) {
             File::delete($file);
         }
+        return null;
     }
 }
