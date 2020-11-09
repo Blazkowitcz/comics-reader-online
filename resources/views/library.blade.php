@@ -4,7 +4,7 @@
     <div class="row">
         @foreach ($libraries as $library)
         <div class="col-md-2">
-            <a href="/{{ $library->slug }}">
+            <a href="/media/{{ $library->slug }}">
                 <img src="{{ $library->picture }}" alt="" itemprop="image" class="col-md-12" style="width: 200px; height: 200px;">
             </a>
             <center>
