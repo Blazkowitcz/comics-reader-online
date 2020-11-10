@@ -17,8 +17,9 @@ class AdminController extends Controller
         foreach ($files as $file) {
             if (!Collection::exist($file, $library->id)) {
                 if ($file[0] != '.' && $file[0] != '@') {
-                    $collection = $this->createCollection($file, Str::slug($file, '-'), $library->id);
                     $volumes = scandir($library->path . '/' . $file);
+                    $number_volumes = $this->countNumberVolumes($volumes);
+                    $collection = $this->createCollection($file, Str::slug($file, '-'), $library->id, $number_volumes);
                     foreach ($volumes as $key => $volume) {
                         if ($volume[0] != '.' && $volume[0] != '@' && !is_dir($volume)) {
                             $name = pathinfo($library->path . '/' . $file . '/' . $volume)['filename'];
@@ -34,13 +35,14 @@ class AdminController extends Controller
         }
     }
 
-    private function createCollection($name, $slug, $library)
+    private function createCollection($name, $slug, $library, $number_volumes)
     {
         $collection = new Collection();
         $collection->name = $name;
         $collection->slug = $slug;
         $collection->library_id = $library;
         $collection->picture = "";
+        $collection->number_volumes = $number_volumes;
         $collection->save();
         return $collection;
     }
@@ -65,5 +67,15 @@ class AdminController extends Controller
         }
         $volume->save();
         return $volume;
+    }
+
+    private function countNumberVolumes($volumes){
+        $number = 0;
+        foreach ($volumes as $key => $volume) {
+            if (strpos($volume, ".cbr") !== false || strpos($volume, ".cbz") !== false || strpos($volume, ".pdf") !== false) {
+                $number ++;
+            }
+        }
+        return $number;
     }
 }

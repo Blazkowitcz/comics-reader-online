@@ -3,14 +3,17 @@
 <div class="container">
     <div class="row">
         @foreach ($collections as $collection)
-        <div class="col-md-2">
-            <a href="/media/{{ $collection->library_slug }}/{{ $collection->slug }}">
-                <img src="{{ $collection->picture }}" alt="" itemprop="image" class="col-md-12" style="width: 200px; height: 200px;">
-            </a>
-            <center>
-                <p>{{ $collection->name }}</p>
-            </center>
-        </div>
+        <a class="col-md-4" href="/media/{{ $collection->library_slug }}/{{ $collection->slug }}">
+            <div class="card">
+                <div class="card-header">
+                    {{ $collection->name }}<span class="badge badge-danger"
+                        style="float: right;">{{ $collection->volumeLeft() }}</span>
+                </div>
+                <div class="card-body">
+                    <img src="{{ $collection->picture }}" alt="" itemprop="image" class="col-md-12">
+                </div>
+            </div>
+        </a>
         @endforeach
     </div>
 </div>

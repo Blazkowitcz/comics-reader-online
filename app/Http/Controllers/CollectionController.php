@@ -13,9 +13,11 @@ class CollectionController extends Controller
             $join->on('collections.library_id', '=', 'libraries.id');
         })->where('libraries.slug', '=', $library)
         ->select(
+            'collections.id as id',
             'collections.name as name',
             'collections.slug as slug',
             'collections.picture as picture',
+            'collections.number_volumes',
             'libraries.name as library_name',
             'libraries.slug as library_slug'
         )->get();
