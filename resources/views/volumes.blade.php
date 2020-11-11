@@ -3,16 +3,19 @@
 <div class="container">
     <div class="row">
         @foreach ($volumes as $volume)
-        <div class="col-md-2 col-sm-12">
-            <center>
-                <a href="/media/{{ $library }}/{{ $collection }}/{{ $volume->slug }}">
-                <img src="{{ $volume->picture }}" alt="" itemprop="image" class="col-md-12 col-sm-12" style="width: 200px; height: 200px;">
-            </a>
-            </center>
-            <center>
-                <p class="col-sm-12">{{ $volume->name }}</p>
-            </center>
-        </div>
+        <a class="col-md-4" href="/media/{{ $library }}/{{ $collection }}/{{ $volume->slug }}" style="margin-bottom: 20px;">
+            <div class="card">
+                <div class="card-header">
+                    {{ $volume->name }}
+                    @if( $volume->isRead() )
+                    <span class="badge badge-success" style="float: right;">V</span>
+                    @endif
+                </div>
+                <div class="card-body">
+                    <img src="{{ $volume->getPicture() }}" alt="" itemprop="image" class="col-md-12" style="width: 200; height: 350px">
+                </div>
+            </div>
+        </a>
         @endforeach
     </div>
 </div>
