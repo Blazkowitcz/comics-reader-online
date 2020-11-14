@@ -2,31 +2,27 @@
 @section('content')
 <div class="container">
     <div class="row">
-        @foreach ($volumes as $volume)
-        <div class="col-md-4" style="margin-bottom: 20px;">
-            <div class="card">
-                <div class="card-header" id="card-header">
-                    <a href="/media/{{ $library }}/{{ $collection }}/{{ $volume->slug }}">{{ $volume->getShortName() }}</a>
-                    @if( $volume->isRead() )
-                    <span class="badge badge-success" style="float: right;">read</span>
+        <table class="table table-header">
+            <tbody class="table-content">
+                @foreach ($volumes as $volume)
+                <tr>
+                    <td><a href="/media/{{ $library }}/{{ $collection }}/{{ $volume->slug }}">
+                    @if($agent->isMobile())
+                        {{ $volume->getShortName() }}
+                    @else 
+                        {{ $volume->name }} 
+                    @endif<i class="far fa-eye" style="float: right;"></i>
+                    @if( $volume->isRead())
+                        <span class="badge badge-success badge-table" style="float: right;">read</span>
                     @endif
-                    @if( $volume->onReading() )
-                    <span class="badge badge-warning" style="float: right;">on reading</span>
+                    @if( $volume->onReading())
+                        <span class="badge badge-warning badge-table" style="float: right;">on reading</span>
                     @endif
-                </div>
-                <div class="card-body">
-                    <a href="/media/{{ $library }}/{{ $collection }}/{{ $volume->slug }}"><img
-                            src="{{ $volume->getPicture() }}" alt="" itemprop="image" class="col-md-12"
-                            style=" height: 350px"></a>
-                </div>
-                <div class="card-footer" id="card-footer">
-                    @if( !$volume->isRead() )
-                    <span><i class="far fa-eye" style="float: right;" onclick="setVolumeRead('{{ $volume->id }}')"></i></span>
-                    @endif
-                </div>
-            </div>
-        </div>
-        @endforeach
+                    </a></td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </div>
 
