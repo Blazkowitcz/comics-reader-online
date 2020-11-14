@@ -8,7 +8,10 @@
                 <div class="card-header" id="card-header">
                     <a href="/media/{{ $library }}/{{ $collection }}/{{ $volume->slug }}">{{ $volume->name }}</a>
                     @if( $volume->isRead() )
-                    <span class="badge badge-success" style="float: right;">V</span>
+                    <span class="badge badge-success" style="float: right;">read</span>
+                    @endif
+                    @if( $volume->onReading() )
+                    <span class="badge badge-warning" style="float: right;">on reading</span>
                     @endif
                 </div>
                 <div class="card-body">

@@ -35,4 +35,14 @@ class Volume extends Model
         }
         return false;
     }
+
+    public function onReading(){
+        $read = VolumeRead::where('volume_id', Auth()->user()->last_volume)->where('user_id', Auth()->user()->id)->first();
+        if(!$read){
+            if(Auth()->user()->last_volume == $this->id){
+                return true;
+            }
+        }
+        return false;
+    }
 }
