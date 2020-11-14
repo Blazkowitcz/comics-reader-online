@@ -38,8 +38,6 @@ class VolumeController extends Controller
         if (Auth()->user()->last_volume == $vol->id) {
             $page = Auth()->user()->last_page;
         } else {
-            Auth()->user()->last_volume = $vol->id;
-            Auth()->user()->save();
             $page = 1;
         }
         return view('volume', ['collection' => $collection, "library" => $library, "volume" => $volume, "user" => Auth()->user()->name, "page" => $page, "max_pages" => $vol->pages]);
@@ -60,6 +58,8 @@ class VolumeController extends Controller
         $library = $collection->library;
         $path = $library->path . '/' . $collection->name . '/' . $volume->name . '.' . $volume->extension;
         if (Auth()->user()->last_volume != $volume->id) {
+            Auth()->user()->last_volume = $volume->id;
+            Auth()->user()->save();
             $this->clearFolder();
             if ($volume->extension == "cbz") {
                 $this->unzipFile($path);
