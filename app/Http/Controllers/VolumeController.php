@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Volume;
+use App\Models\VolumeRead;
 use Illuminate\Support\Facades\File;
 use ZanySoft\Zip\Zip;
 
@@ -19,7 +20,7 @@ class VolumeController extends Controller
     {
         $volumes = Volume::leftJoin('collections', function ($join) {
             $join->on('volumes.collection_id', '=', 'collections.id');
-        })->where('collections.slug', '=', $collection)->select('volumes.name as name', 'volumes.slug as slug', 'volumes.picture as picture', 'volumes.id as id')->get();
+        })->where('collections.slug', '=', $collection)->select('volumes.name as name', 'volumes.slug as slug', 'volumes.picture as picture', 'volumes.id as id', 'volumes.collection_id as collection_id')->get();
         return view('volumes', ['volumes' => $volumes, "library" => $library, "collection" => $collection]);
     }
 
@@ -34,9 +35,9 @@ class VolumeController extends Controller
     public function readVolume($library, $collection, $volume)
     {
         $vol = Volume::where('slug', $volume)->first();
-        if(Auth()->user()->last_volume == $vol->id){
+        if (Auth()->user()->last_volume == $vol->id) {
             $page = Auth()->user()->last_page;
-        }else{
+        } else {
             Auth()->user()->last_volume = $vol->id;
             Auth()->user()->save();
             $page = 1;
@@ -58,8 +59,14 @@ class VolumeController extends Controller
         $collection = $volume->collection;
         $library = $collection->library;
         $path = $library->path . '/' . $collection->name . '/' . $volume->name . '.' . $volume->extension;
-        $this->clearFolder();
-        $this->unzipFile($path);
+        if (Auth()->user()->last_volume != $volume->id) {
+            $this->clearFolder();
+            if ($volume->extension == "cbz") {
+                $this->unzipFile($path);
+            } else if ($volume->extension == "cbr") {
+                $this->unrarFile($path);
+            }
+        }
         return null;
     }
 
@@ -75,6 +82,11 @@ class VolumeController extends Controller
         $zip->extract(Auth()->user()->getPublicPath());
         $this->exportFilesAndClear();
         return null;
+    }
+
+    private function unrarFile($path)
+    {
+        $rar_file = rar_open($path);
     }
 
     /**
@@ -123,9 +135,10 @@ class VolumeController extends Controller
                 $array[] = $file;
             }
         }
-        if($page -1 <= 0){
+        if ($page - 1 <= 0) {
             $page = 1;
-        }else if($page > count($array)){
+        } else if ($page >= count($array)) {
+            $this->volumeReads($volume);
             $page = count($array);
         }
         Auth()->user()->last_page = $page;
@@ -169,4 +182,32 @@ class VolumeController extends Controller
         }
         return null;
     }
+
+    /**
+     * Set the selected volume as read
+     * @param string $volume
+     */
+    private function volumeReads($volume)
+    {
+        $vol = Volume::where('slug', $volume)->first();
+        $volume_read = VolumeRead::where('volume_id', $vol->id)->where('user_id', Auth()->user()->id)->first();
+        if ($volume_read == null) {
+            $volume_read = new VolumeRead();
+            $volume_read->user_id = Auth()->user()->id;
+            $volume_read->volume_id = $vol->id;
+            $volume_read->save();
+        }
+    }
+
+    /**
+     * Add the volume as readed
+     * @param string $volume_slug
+     */
+    public function setVolumeRead($volume_id)
+    {
+        $volume = Volume::where('id', $volume_id)->first();
+        $this->volumeReads($volume->slug);
+        return null;
+    }
+
 }
