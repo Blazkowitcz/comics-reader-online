@@ -8,7 +8,7 @@
 <div class="container">
     <div class="row">
         <img id="current_img"
-            src="https://static.fnac-static.com/multimedia/Images/FR/NR/77/d1/73/7590263/1507-1/tsp20160219152615/Naruto.jpg"
+            src="/loading.gif"
             class="col-md-12">
         <div class="col-md-12" style="margin-top: 10px;">
             <center>
