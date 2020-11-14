@@ -6,7 +6,7 @@
         <div class="col-md-4" style="margin-bottom: 20px;">
             <div class="card">
                 <div class="card-header" id="card-header">
-                    <a href="/media/{{ $library }}/{{ $collection }}/{{ $volume->slug }}">{{ $volume->name }}</a>
+                    <a href="/media/{{ $library }}/{{ $collection }}/{{ $volume->slug }}">{{ $volume->getShortName() }}</a>
                     @if( $volume->isRead() )
                     <span class="badge badge-success" style="float: right;">read</span>
                     @endif

@@ -28,6 +28,10 @@ class Volume extends Model
         return $this->picture;
     }
 
+    public function getShortName(){
+        return mb_strimwidth($this->name, 0, 25, '...');
+    }
+
     public function isRead(){
         $read = VolumeRead::where('user_id', Auth()->user()->id)->where('volume_id', $this->id)->first();
         if($read){
