@@ -21,6 +21,10 @@ class Collection extends Model
         return $this->belongsTo(Library::class);
     }
 
+    public function volumes(){
+        return $this->hasMany(Volume::class);
+    }
+
     public static function exist($name, $library_id)
     {
         $collections = Collection::all();

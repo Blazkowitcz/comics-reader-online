@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Collection;
 use App\Models\Library;
+use App\Models\User;
 use App\Models\Volume;
 use Illuminate\Support\Str;
 use ZanySoft\Zip\Zip;
+use Illuminate\Support\Facades\Log;
+
 
 class AdminController extends Controller
 {
@@ -28,6 +31,25 @@ class AdminController extends Controller
                                 $extension = pathinfo($library->path . '/' . $file . '/' . $volume)['extension'];
                             } catch (\Exception $e) {}
                             $volume = $this->createVolume($name, Str::slug($name, '-'), $extension, $collection->id);
+                        }
+                    }
+                }
+            } else {
+                $collection = Collection::where('name', $file)->where('library_id', $library->id)->first();
+                if ($file[0] != '.' && $file[0] != '@') {
+                    $volumes = scandir($library->path . '/' . $file);
+                    $number_volumes = $this->countNumberVolumes($volumes);
+                    foreach ($volumes as $key => $volume) {
+                        if ($volume[0] != '.' && $volume[0] != '@' && !is_dir($volume)) {
+                            $name = pathinfo($library->path . '/' . $file . '/' . $volume)['filename'];
+                            if (!Volume::exist($name, $collection->id)) {
+                                $extension = "";
+                                try {
+                                    $extension = pathinfo($library->path . '/' . $file . '/' . $volume)['extension'];
+                                } catch (\Exception $e) {}
+                                $volume = $this->createVolume($name, Str::slug($name, '-'), $extension, $collection->id);
+
+                            }
                         }
                     }
                 }
@@ -69,13 +91,27 @@ class AdminController extends Controller
         return $volume;
     }
 
-    private function countNumberVolumes($volumes){
+    private function countNumberVolumes($volumes)
+    {
         $number = 0;
         foreach ($volumes as $key => $volume) {
             if (strpos($volume, ".cbr") !== false || strpos($volume, ".cbz") !== false || strpos($volume, ".pdf") !== false) {
-                $number ++;
+                $number++;
             }
         }
         return $number;
+    }
+
+    public function index()
+    {
+        $users = User::all()->count();
+        $libraries = Library::all()->count();
+        return view('admin', ['users' => $users, 'libraries' => $libraries]);
+    }
+
+    public function libraries()
+    {
+        $libraries = Library::all();
+        return view('admin-libraries', ['libraries' => $libraries]);
     }
 }
