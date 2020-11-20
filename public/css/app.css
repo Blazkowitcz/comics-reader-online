@@ -9152,7 +9152,11 @@ body {
 }
 
 a {
-  color: white; 
+  color: white;
   text-decoration: none;
   background-color: transparent;
+}
+
+.custom-card {
+  background: linear-gradient(315deg, rgb(255, 78, 0) 0%, rgb(236, 159, 5) 74%) !important;
 }
