@@ -3,13 +3,10 @@
 <div class="container">
     <div class="row">
         @foreach ($libraries as $library)
-        <a class="col-md-4" href="/media/{{ $library->slug }}" style="margin-bottom: 20px;">
-            <div class="card">
-                <div class="card-header">
-                    {{ $library->name }}
-                </div>
+        <a class="col-md-4" href="/media/{{ $library->slug }}">
+            <div class="card  text-white custom-card">
                 <div class="card-body">
-                    <img src="{{ $library->picture }}" alt="" itemprop="image" class="col-md-12" style="width: 200; height: 350px">
+                    <h2>{{ $library->name }}</h2>
                 </div>
             </div>
         </a>
