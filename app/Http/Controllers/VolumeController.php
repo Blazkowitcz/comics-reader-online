@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Volume;
 use App\Models\VolumeRead;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\Process\Process;
 use ZanySoft\Zip\Zip;
 
 class VolumeController extends Controller
@@ -20,7 +22,7 @@ class VolumeController extends Controller
     {
         $volumes = Volume::leftJoin('collections', function ($join) {
             $join->on('volumes.collection_id', '=', 'collections.id');
-        })->where('collections.slug', '=', $collection)->select('volumes.name as name', 'volumes.slug as slug', 'volumes.picture as picture', 'volumes.id as id', 'volumes.collection_id as collection_id')->get();
+        })->where('collections.slug', '=', $collection)->select('volumes.name as name', 'volumes.slug as slug', 'volumes.picture as picture', 'volumes.id as id', 'volumes.collection_id as collection_id', 'volumes.language_id as language_id')->get();
         return view('volumes', ['volumes' => $volumes, "library" => $library, "collection" => $collection]);
     }
 
@@ -32,7 +34,7 @@ class VolumeController extends Controller
      *
      * @return view
      */
-    public function readVolume($library, $collection, $volume)
+    public function readVolume(string $library, string $collection, string $volume)
     {
         $vol = Volume::where('slug', $volume)->first();
         if (Auth()->user()->last_volume == $vol->id) {
@@ -51,21 +53,19 @@ class VolumeController extends Controller
      *
      *  @return null
      */
-    public function uncompressVolume($library, $collection, $volume)
+    public function uncompressVolume(string $library, string $collection, string $volume)
     {
         $volume = Volume::where('slug', $volume)->first();
-        $collection = $volume->collection;
-        $library = $collection->library;
-        $path = $library->path . '/' . $collection->name . '/' . $volume->name . '.' . $volume->extension;
+        $path = $volume->collection->library->path . '/' . $volume->collection->name . '/' . $volume->name . '.' . $volume->extension;
         if (Auth()->user()->last_volume != $volume->id) {
-            Auth()->user()->last_volume = $volume->id;
-            Auth()->user()->save();
             $this->clearFolder();
             if ($volume->extension == "cbz") {
                 $this->unzipFile($path);
             } else if ($volume->extension == "cbr") {
                 $this->unrarFile($path);
             }
+            Auth()->user()->last_volume = $volume->id;
+            Auth()->user()->save();
         }
         return null;
     }
@@ -78,15 +78,23 @@ class VolumeController extends Controller
      */
     private function unzipFile($path)
     {
-        $zip = Zip::open($path);
-        $zip->extract(Auth()->user()->getPublicPath());
-        $this->exportFilesAndClear();
-        return null;
+        try {
+            $zip = Zip::open($path);
+            $zip->extract(Auth()->user()->getPublicPath());
+            $this->exportFilesAndClear();
+        } catch (\Exception $e) {
+            $this->unrarFile($path);
+        }
     }
 
-    private function unrarFile($path)
+    private function unrarFile(string $path)
     {
-        $rar_file = rar_open($path);
+        $process = new Process(['unrar', $path, Auth()->user()->getPublicPath()]);
+        $process->start();
+        $process->waitUntil(function ($type, $output) {
+            $this->exportFilesAndClear();
+            return null;
+        });
     }
 
     /**
@@ -126,7 +134,7 @@ class VolumeController extends Controller
      *
      * @return string
      */
-    public function readPage($library, $collection, $volume, $page)
+    public function readPage(string $library, string $collection, string $volume, int $page)
     {
         $files = scandir(Auth()->user()->getPublicPath());
         $array = [];
@@ -152,7 +160,7 @@ class VolumeController extends Controller
      *
      * @return string
      */
-    private function reformatName($file)
+    private function reformatName(string $file) : string
     {
         $name = pathinfo(public_path($file))['filename'];
         $extension = pathinfo(public_path($file))['extension'];
@@ -201,9 +209,10 @@ class VolumeController extends Controller
 
     /**
      * Add the volume as readed
-     * @param string $volume_slug
+     * @param $volume_id
+     * @return null
      */
-    public function setVolumeRead($volume_id)
+    public function setVolumeRead(int $volume_id)
     {
         $volume = Volume::where('id', $volume_id)->first();
         $this->volumeReads($volume->slug);

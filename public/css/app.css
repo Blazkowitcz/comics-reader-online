@@ -9094,3 +9094,69 @@ a.text-dark:hover, a.text-dark:focus {
   color: white !important;
   border-bottom: 0px solid;
 }
+
+table {
+  border-collapse: separate;
+  white-space: nowrap;
+}
+
+.table th, .table td {
+  border-bottom: 0px;
+  border-top: 0px;
+}
+
+.table thead th {
+  border-bottom: 0px;
+  background-color: #0085AD;
+  font-weight: 100;
+}
+
+.table-header th, .table-header td {
+  background-color: transparent;
+  border-spacing: 0 15px;
+  color: white;
+  font-weight: normal;
+}
+
+.table-content tr {
+  border-spacing: 15px 15px !important;
+}
+
+.table-content th, .table-content td {
+  border-collapse: separate;
+  border-spacing: 15 15px;
+  margin-top: 10px;
+}
+
+tr {
+  background: linear-gradient(315deg, rgb(255, 78, 0) 0%, rgb(236, 159, 5) 74%) !important;
+}
+
+th, td {
+  border-bottom: solid;
+  border-color: gray;
+  border-width: 1px;
+  padding: 50px;
+  color: white;
+  vertical-align: middle !important;
+}
+
+body {
+  background: #100e17;
+}
+
+.badge-table {
+  margin-right: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+  background-color: transparent;
+}
+
+.custom-card {
+  background: linear-gradient(315deg, rgb(255, 78, 0) 0%, rgb(236, 159, 5) 74%) !important;
+}

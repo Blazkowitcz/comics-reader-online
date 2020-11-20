@@ -7,19 +7,25 @@
 <div style="display: none;" id="user">{{ $user }}</div>
 <div class="container">
     <div class="row">
+        <div class="col-md-12">
+            <h3 style="color: white"><a href="/media/{{ $library }}">{{ $library }}</a> / <a href="/media/{{ $library }}/{{ $collection }}">{{ $collection }}</a><div style="float: right"><a id="current_page">{{ $page }} </a>/ {{ $max_pages }}</div></h3>
+        </div>
         <img id="current_img"
-            src="https://static.fnac-static.com/multimedia/Images/FR/NR/77/d1/73/7590263/1507-1/tsp20160219152615/Naruto.jpg"
-            class="col-md-12">
+            src="/loading.gif"
+            class="col-md-12 current_img">
         <div class="col-md-12" style="margin-top: 10px;">
-            <center>
+            <div style="text-align: center;">
                 <button class="btn btn-primary" onclick="previousPage()">Précédent</button>
                 <button class="btn btn-primary" onclick="nextPage()">Suivant</button>
-            </center>
+            </div>
         </div>
+        <div id="one"></div>
+        <p>Swipe right, left and up</p>
     </div>
 </div>
 @endsection
 <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-touch-events/1.0.5/jquery.mobile-events.js"></script>
 <script>
     $(document).ready(function () {
         uncompressFile();
@@ -31,12 +37,43 @@
                 nextPage();
             }
         });
+        var container = document.querySelector(".current_img");
+        container.addEventListener("touchstart", startTouch, false);
+        container.addEventListener("touchmove", moveTouch, false);
+        var initialX = null;
+        var initialY = null;
+        function startTouch(e) {
+            initialX = e.touches[0].clientX;
+            initialY = e.touches[0].clientY;
+        };
+        function moveTouch(e) {
+            if (initialX === null) {
+                return;
+            }
+            if (initialY === null) {
+                return;
+            }
+            var currentX = e.touches[0].clientX;
+            var currentY = e.touches[0].clientY;
+            var diffX = initialX - currentX;
+            var diffY = initialY - currentY;
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (diffX > 0) {
+                    nextPage();
+                } else {
+                    previousPage();
+                }
+            }
+            initialX = null;
+            initialY = null;
+            e.preventDefault();
+        };
     });
 
     function uncompressFile() {
-        var library = $("#library").text();
-        var collection = $("#collection").text();
-        var volume = $("#volume").text();
+        let library = $("#library").text();
+        let collection = $("#collection").text();
+        let volume = $("#volume").text();
         $.ajax({
             type: 'GET',
             headers: {
@@ -54,11 +91,11 @@
     }
 
     function getPage() {
-        var library = $("#library").text();
-        var collection = $("#collection").text();
-        var volume = $("#volume").text();
-        var page = $("#page").text();
-        var user = $("#user").text();
+        let library = $("#library").text();
+        let collection = $("#collection").text();
+        let volume = $("#volume").text();
+        let page = $("#page").text();
+        let user = $("#user").text();
         $.ajax({
             type: 'GET',
             headers: {
@@ -73,14 +110,14 @@
     }
 
     function nextPage() {
-        currentPage = parseInt($("#page").text());
+        let currentPage = parseInt($("#page").text());
         currentPage += 1;
         $("#page").text(currentPage);
-        var library = $("#library").text();
-        var collection = $("#collection").text();
-        var volume = $("#volume").text();
-        var page = $("#page").text();
-        var user = $("#user").text();
+        let library = $("#library").text();
+        let collection = $("#collection").text();
+        let volume = $("#volume").text();
+        let page = $("#page").text();
+        let user = $("#user").text();
         $.ajax({
             type: 'GET',
             headers: {
@@ -89,20 +126,21 @@
             url: '/media/' + library + "/" + collection + "/" + volume + "/" + page,
             datatype: 'JSON',
             success: function (response) {
+                $("#current_page").text(page);
                 $("#current_img").attr("src", "/" + user + "/current/" + response);
             }
         });
     }
 
     function previousPage() {
-        currentPage = parseInt($("#page").text());
+        let currentPage = parseInt($("#page").text());
         currentPage -= 1;
         $("#page").text(currentPage);
-        var library = $("#library").text();
-        var collection = $("#collection").text();
-        var volume = $("#volume").text();
-        var page = $("#page").text();
-        var user = $("#user").text();
+        let library = $("#library").text();
+        let collection = $("#collection").text();
+        let volume = $("#volume").text();
+        let page = $("#page").text();
+        let user = $("#user").text();
         $.ajax({
             type: 'GET',
             headers: {
@@ -111,6 +149,7 @@
             url: '/media/' + library + "/" + collection + "/" + volume + "/" + page,
             datatype: 'JSON',
             success: function (response) {
+                $("#current_page").text(page);
                 $("#current_img").attr("src", "/" + user + "/current/" + response);
             }
         });

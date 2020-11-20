@@ -44,4 +44,11 @@ class User extends Authenticatable
     public function getPublicPath(){
         return public_path() . '/' . $this->name . '/current';
     }
+
+    public function isAdmin(){
+        if($this->admin == 1){
+            return true;
+        }
+        return false;
+    }
 }

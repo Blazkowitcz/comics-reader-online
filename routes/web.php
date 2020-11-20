@@ -40,6 +40,10 @@ Route::group(['middleware' => ['auth']], function () {
     /**
      * Admin routes
      */
+    Route::get('/admin/', [App\Http\Controllers\AdminController::class, 'index'])->name('admin');
+    Route::get('/admin/libraries', [App\Http\Controllers\AdminController::class, 'libraries'])->name('admin-libraries');
+
+    Route::get('/logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
     
 });
 
