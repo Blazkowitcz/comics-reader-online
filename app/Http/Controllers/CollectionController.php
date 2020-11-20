@@ -20,7 +20,7 @@ class CollectionController extends Controller
             'collections.number_volumes',
             'libraries.name as library_name',
             'libraries.slug as library_slug'
-        )->get();
+        )->orderBy('name', 'asc')->get();
         return view('collection', [ "collections" => $collections ]);
     }
 }
