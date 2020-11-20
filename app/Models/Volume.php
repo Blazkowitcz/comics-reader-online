@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Volume extends Model
 {
@@ -30,6 +31,15 @@ class Volume extends Model
      */
     public function collection(){
         return $this->belongsTo(Collection::class, 'collection_id');
+    }
+
+    public function language(){
+        $language = Language::where('id', $this->language_id)->first();
+        if($language != null){
+            Log::debug($language->picture);
+            return $language->picture;
+        }
+        return null;
     }
 
     /**

@@ -11,9 +11,12 @@
                         {{ $volume->getShortName() }}
                     @else 
                         {{ $volume->name }} 
-                    @endif<i class="far fa-eye" style="float: right;"></i>
+                    @endif
+                    {!! $volume->language() !!}
                     @if( $volume->isRead())
                         <span class="badge badge-success badge-table" style="float: right;">read</span>
+                    @else
+                        <i class="far fa-eye" style="float: right;"></i>
                     @endif
                     @if( $volume->onReading())
                         <span class="badge badge-warning badge-table" style="float: right;">on reading</span>
