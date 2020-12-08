@@ -4,7 +4,9 @@
 <div style="display: none;" id="collection">{{ $collection }}</div>
 <div style="display: none;" id="volume">{{ $volume }}</div>
 <div style="display: none;" id="page">{{ $page }}</div>
+<div style="display: none;" id="max_page">{{ $max_pages }}</div>
 <div style="display: none;" id="user">{{ $user }}</div>
+
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -82,7 +84,7 @@
             url: '/media/' + library + "/" + collection + "/" + volume + "/uncompress",
             datatype: 'JSON',
             beforeSend: function () {
-                //$("#current_img").attr("src", "/loading.gif");
+                toastr.warning('Volume decompression in progress', 'Info');
             },
             success: function (response) {
                 getPage();
@@ -128,6 +130,9 @@
             success: function (response) {
                 $("#current_page").text(page);
                 $("#current_img").attr("src", "/" + user + "/current/" + response);
+                if($("#current_page").text() == $("#max_page").text()){
+                    toastr.success('Volume finished', 'Success');
+                }
             }
         });
     }
