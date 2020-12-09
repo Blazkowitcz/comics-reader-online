@@ -9076,6 +9076,10 @@ a.text-dark:hover, a.text-dark:focus {
   background-color: #51A351 !important;
 }
 
+.toast-warning {
+  background-color: #f6993f !important;
+}
+
 .navbar {
   background: linear-gradient(315deg, rgb(255, 78, 0) 0%, rgb(236, 159, 5) 74%) !important;
   height: 80px;
