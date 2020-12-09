@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Volume;
 use App\Models\VolumeRead;
 use Illuminate\Support\Facades\File;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
 use ZanySoft\Zip\Zip;
@@ -216,6 +217,18 @@ class VolumeController extends Controller
     {
         $volume = Volume::where('id', $volume_id)->first();
         $this->volumeReads($volume->slug);
+        return null;
+    }
+
+    /**
+     * Change the size of the page
+     * @param Request
+     * @return null
+     */
+    public function changeSizePage(Request $request){
+        $user = Auth()->user();
+        $user->size = $request->input('size');
+        $user->save();
         return null;
     }
 

@@ -111,7 +111,7 @@ class AdminController extends Controller
 
     public function libraries()
     {
-        $libraries = Library::all();
+        $libraries = Library::orderBy('name', 'DESC')->get();
         return view('admin-libraries', ['libraries' => $libraries]);
     }
 }

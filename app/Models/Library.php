@@ -10,6 +10,6 @@ class Library extends Model
     use HasFactory;
 
     public function collection(){
-        return $this->hasMany(Collection::class);
+        return $this->hasMany(Collection::class)->orderBy('name');
     }
 }

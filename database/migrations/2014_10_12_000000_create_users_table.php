@@ -21,6 +21,10 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            $table->integer('last_volume');
+            $table->integer('last_page');
+            $table->integer('admin');
+            $table->integer('size')->default(100);
         });
     }
 

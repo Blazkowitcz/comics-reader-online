@@ -13,15 +13,16 @@
                         {{ $volume->name }} 
                     @endif
                     {!! $volume->language() !!}
+                    </a>
                     @if( $volume->isRead())
                         <span class="badge badge-success badge-table" style="float: right;">read</span>
                     @else
-                        <i class="far fa-eye" style="float: right;"></i>
+                        <i class="far fa-eye" style="float: right;" onclick="setVolumeRead({{ $volume->id }})"></i>
                     @endif
                     @if( $volume->onReading())
                         <span class="badge badge-warning badge-table" style="float: right;">on reading</span>
                     @endif
-                    </a></td>
+                    </td>
                 </tr>
                 @endforeach
             </tbody>

@@ -65,8 +65,8 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        File::makeDirectory(public_path().'/'.$data['name']);
-        File::makeDirectory(public_path().'/'.$data['name'].'/current');
+        //File::makeDirectory(public_path().'/'.$data['name'], $mode = 0777, true, true);
+        File::makeDirectory(public_path().'/'.$data['name'].'/current', $mode = 0777, true, true);
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],

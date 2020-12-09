@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Auth::routes();
-Route::get('/admin/{library}/scan', [App\Http\Controllers\AdminController::class, 'scanFolder'])->name('scan-folder');
 
 Route::group(['middleware' => ['auth']], function () {
     /**
@@ -36,12 +35,14 @@ Route::group(['middleware' => ['auth']], function () {
      * Volumes routes
      */
     Route::get('/api/volume/setVolumeRead/{id}', [App\Http\Controllers\VolumeController::class, 'setVolumeRead'])->name('set-volume-read');
+    Route::post('/user/changeSizePage', [App\Http\Controllers\VolumeController::class, 'changeSizePage'])->name('change-size-page');
 
     /**
      * Admin routes
      */
     Route::get('/admin/', [App\Http\Controllers\AdminController::class, 'index'])->name('admin');
     Route::get('/admin/libraries', [App\Http\Controllers\AdminController::class, 'libraries'])->name('admin-libraries');
+    Route::get('/admin/{library}/scan', [App\Http\Controllers\AdminController::class, 'scanFolder'])->name('scan-folder');
 
     Route::get('/logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
     
