@@ -130,6 +130,7 @@
             success: function (response) {
                 $("#current_page").text(page);
                 $("#current_img").attr("src", "/" + user + "/current/" + response);
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
                 if($("#current_page").text() == $("#max_page").text()){
                     toastr.success('Volume finished', 'Success');
                 }
@@ -156,7 +157,5 @@
             success: function (response) {
                 $("#current_page").text(page);
                 $("#current_img").attr("src", "/" + user + "/current/" + response);
-            }
-        });
-    }
-</script>
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+se);
