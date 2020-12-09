@@ -10,21 +10,34 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <h3 style="color: white"><a href="/media/{{ $library }}">{{ $library }}</a> / <a href="/media/{{ $library }}/{{ $collection }}">{{ $collection }}</a><div style="float: right"><a id="current_page">{{ $page }} </a>/ {{ $max_pages }}</div></h3>
+            <h3 style="color: white"><a href="/media/{{ $library }}">{{ $library }}</a> / <a
+                    href="/media/{{ $library }}/{{ $collection }}">{{ $collection }}</a>
+                    <i class="fas fa-cog" style="float: right;" data-toggle="modal" data-target="#settingsModal"> </i>
+                <div style="float: right"><a id="current_page">{{ $page }} </a>/ {{ $max_pages }} </div>
+            </h3>
         </div>
-        <img id="current_img"
-            src="/loading.gif"
-            class="col-md-12 current_img">
+        <center>
+            <img id="current_img" src="/loading.gif" class="col-md-12 current_img" style="width: {{ Auth()->user()->size }}%;">
+        </center>
+
         <div class="col-md-12" style="margin-top: 10px;">
             <div style="text-align: center;">
                 <button class="btn btn-primary" onclick="previousPage()">Précédent</button>
                 <button class="btn btn-primary" onclick="nextPage()">Suivant</button>
             </div>
         </div>
-        <div id="one"></div>
-        <p>Swipe right, left and up</p>
     </div>
 </div>
+<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <p>Page Size</p>
+          <input type="range" class="custom-range" min="1" max="100" step="1" id="customRange1" onchange="changeSize()">
+        </div>
+      </div>
+    </div>
+  </div>
 @endsection
 <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-touch-events/1.0.5/jquery.mobile-events.js"></script>
@@ -38,6 +51,10 @@
             else if (e.keyCode == 39) { // right
                 nextPage();
             }
+        });
+
+        $("#customRange1").on('slide', function(slideEvt){
+            console.log(slideEvt.value);
         });
         var container = document.querySelector(".current_img");
         container.addEventListener("touchstart", startTouch, false);
@@ -70,6 +87,8 @@
             initialY = null;
             e.preventDefault();
         };
+
+
     });
 
     function uncompressFile() {
@@ -130,10 +149,10 @@
             success: function (response) {
                 $("#current_page").text(page);
                 $("#current_img").attr("src", "/" + user + "/current/" + response);
-                $('html, body').animate({ scrollTop: 0 }, 'fast');
-                if($("#current_page").text() == $("#max_page").text()){
+                if ($("#current_page").text() == $("#max_page").text()) {
                     toastr.success('Volume finished', 'Success');
                 }
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
             }
         });
     }
@@ -158,4 +177,24 @@
                 $("#current_page").text(page);
                 $("#current_img").attr("src", "/" + user + "/current/" + response);
                 $('html, body').animate({ scrollTop: 0 }, 'fast');
-se);
+            }
+        });
+    }
+
+    function changeSize(){
+        $('#current_img').css('width', $('#customRange1').val() + '%');
+        $('#current_img').css('text-align', 'center');
+        let size = $('#customRange1').val();
+        $.ajax({
+            type: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url: '/user/changeSizePage',
+            datatype: 'JSON',
+            data: { size },
+            success: function (response) {
+            }
+        });
+    }
+</script>
